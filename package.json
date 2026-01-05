@@ -1,4 +1,3 @@
-
 {
   "name": "evento-facile",
   "private": true,
@@ -13,7 +12,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "lucide-react": "^0.400.0",
-    "@google/genai": "^0.21.0"
+    "@google/genai": "^0.1.2"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
