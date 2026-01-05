@@ -376,8 +376,7 @@ function App() {
       setAdminId(data.record.adminId || null);
       
       if (!isSaving.current) {
-        // Qui aggiorniamo la lista utenti. Se il mio ID attuale non c'è, sono stato kickato?
-        // Per ora ci fidiamo del server.
+        // Qui aggiorniamo la lista utenti.
         setUsers(data.record.users || []);
         setUnavailableDates(data.record.unavailableDates || {});
         setAvailableDates(data.record.availableDates || {});
@@ -588,7 +587,7 @@ function App() {
     // 3. Aggiorno lo stato locale con l'identità definitiva
     localStorage.setItem('my_name', inputName);
     localStorage.setItem('my_avatar', inputAvatar);
-    localStorage.setItem('my_id', idToUse || ''); // Fallback
+    localStorage.setItem('my_id', idToUse || ''); 
     
     setMyName(inputName);
     setMyAvatar(inputAvatar);
@@ -710,7 +709,6 @@ function App() {
       url.searchParams.delete('id');
       window.history.pushState({}, '', url.toString());
     } else {
-        // Se il sync fallisce, ricarichiamo per non lasciare l'utente in uno stato inconsistente
         loadEvent(binId);
     }
     
@@ -1026,7 +1024,14 @@ function App() {
   };
 
   const handleSendPrompt = async () => {
-    if (!promptInput.trim() || !process.env.API_KEY) return;
+    if (!promptInput.trim()) return;
+    
+    if (!process.env.API_KEY) {
+      const newHistory = [...chatHistory, { role: 'user' as const, text: promptInput.trim() }, { role: 'model' as const, text: "Mi dispiace, la chiave API di Google non è configurata. L'amministratore del sito deve aggiungerla per farmi funzionare." }];
+      setChatHistory(newHistory);
+      setPromptInput('');
+      return;
+    }
     
     const userMsg = promptInput.trim();
     setPromptInput(''); 
@@ -1366,8 +1371,6 @@ function App() {
                     <div className="text-slate-300" title={u.mode === 'busy' ? 'Segna Assenze' : 'Segna Presenze'}>
                        {u.mode === 'busy' || !u.mode ? <UserX size={14} /> : <UserCheck size={14} />}
                     </div>
-                    {/* Solo mostrare il cestino se NON sono l'admin, o se sono un partecipante normale. 
-                        L'admin non deve avere il cestino accanto al suo nome, deve usare Elimina Evento. */}
                     {u.id === myId && u.id !== adminId && (
                       <button type="button" onClick={(e) => leaveEvent(e)} className="text-rose-400 hover:text-rose-600 p-2 hover:bg-rose-50 rounded-full transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer" title="Esci dall'evento">
                         <Trash2 size={16} />
